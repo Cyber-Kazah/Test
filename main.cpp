@@ -1,43 +1,93 @@
 
 #include "TXLib.h"
+
+struct Forma
+{
+    string text_q;
+    int r_ans;
+        HDC pic1;
+    string text_ans1;
+
+        HDC pic2;
+    string text_ans2;
+
+        HDC pic3;
+    string text_ans3;
+};
+
+void drawAns(int x, HDC pic, string text_ans)
+{
+    txSelectFont("Times New Roman", 40);
+    txDrawText  (x, 550, x+380, 890, text_ans.c_str());
+    txRectangle (x, 350, x+380, 690);
+    txBitBlt(txDC(), x, 350, 380, 340, pic);
+}
+
+bool clickAns(int x)
+{
+ return( txMouseButtons() == 1 && txMouseX() > x && txMouseX() < x+380 && txMouseY() > 350 && txMouseY() > 690);
+
+}
+
  //сюжет тим фортресс 2
 int main()
     {
-    txCreateWindow (1900, 900);
+    txCreateWindow (1700, 900);
 
-    HDC Zph = txLoadImage("Pic/Zep.bmp");
-    HDC Grey = txLoadImage("Pic/Grey.bmp");
-    HDC Sax = txLoadImage ("Pic/Sax.bmp");
+    int kol_q = 2;
+    Forma q_buf;
+    Forma q[kol_q];
+    q[0] = {"Кто написал завещание братьям Манн?", 2, txLoadImage("Pic/Zep.bmp"), "Зефеная Манн", txLoadImage("Pic/Grey.bmp"), "Грей Манн",  txLoadImage ("Pic/Sax.bmp"), "Сакстон Хэил"};
+    q[1] = {"Кто сосед Солдата?", 3, txLoadImage ("Pic/Mom.bmp"), "Мама Подрывника", txLoadImage ("Pic/SC.bmp"), "Разведчик", txLoadImage ("Pic/Mar.bmp"), "Маразмус"};
+    int n_q = 1;
+    int kol_r_ans = 0;
 
-    string text_q1 = "Кто написал завещание братьям Манн?";
-    HDC pic1 = Zph;
-    string text_ans1 = "Зефеная Манн";
+    while(true)
+    {
+     txSetColor(TX_WHITE, 5);
+     txSetFillColor(TX_BLACK);
+     txClear();
+     txBegin;
 
-    HDC pic2 = Grey;
-    string text_ans2 = "Грей Манн";
-
-    HDC pic3 = Sax;
-    string text_ans3 = "Сакстон Хэил";
-
-
-
-
+    q_buf = q[n_q - 1];
 
     //вопрос
-    txSelectFont("Times New Roman", 40);
-    txDrawText(0, 0, 1900, 200, text_q1.c_str());
+     txDrawText(0, 0, 1900, 200, q_buf.text_q.c_str());
+     drawAns(200, q_buf.pic1, q_buf.text_ans1);
+     drawAns(700, q_buf.pic2, q_buf.text_ans2);
+     drawAns(1200, q_buf.pic3, q_buf.text_ans3);
 
-    txDrawText(200, 550, 580, 890, text_ans1.c_str());
-        txRectangle (200, 350, 580, 690);
-    txBitBlt(txDC(), 200, 350, 380, 340, Zph);
+    if( txMouseButtons() == 1 &&
+        txMouseX() > 200 && txMouseX() < 580 &&
+        txMouseY() > 350 && txMouseY() < 690)
+    {
+        n_q++;
+        txSleep(200);
 
-    txDrawText(700, 550, 1080, 890, text_ans2.c_str());
-        txRectangle (700, 350, 1080, 690);
-    txBitBlt(txDC(), 700, 350, 380, 340, Grey);
+    }
+     if(clickAns(200))
+     {
+       if(q_buf.r_ans == 1) kol_r_ans++;
+       txSleep(200);
+       n_q++;
+     }
 
-    txDrawText(1200, 550, 1580, 890, text_ans3.c_str());
-        txRectangle (1200, 350, 1580, 690);
-    txBitBlt(txDC(), 1200, 350, 380, 340, Sax);
+     if(clickAns(700))
+     {
+       if(q_buf.r_ans == 2) kol_r_ans++;
+       txSleep(200);
+       n_q++;
+     }
+
+     if(clickAns(1200))
+     {
+       if(q_buf.r_ans == 3) kol_r_ans++;
+       txSleep(200);
+       n_q++;
+     }
+     txEnd;
+     txSleep(20);
+    }
 
     txTextCursor (false);
     return 0;
